@@ -1,88 +1,90 @@
 #include <iostream>
 #include <string>
 struct Node {
-char data_;
-Node* next_;};
-
-class LinkedList{
-private:
-    Node* head_;
-public:
-    LinkedList(Node*);
-    ~LinkedList();
-    Node* push(char, Node*);
-    Node* GetHead();
-    void Reverse();
-
+  char data;
+  Node* next;
 };
-LinkedList::LinkedList(Node* head): head_(head){ head_->next_=NULL;}
 
-LinkedList::~LinkedList(){
-Node* Delete = head_;
-Node* Next = head_->next_;
-while(Next != NULL){
-    delete Delete;
-    Delete= Next;
-    Next= Delete->next_;
+class LinkedList {
+ private:
+  Node* head_;
+ public:
+  LinkedList(Node*);
+  Node* push(char, Node*);
+  Node* GetHead();
+  void Reverse();
+  ~LinkedList();
+};
+
+LinkedList ::LinkedList (Node* head): head_(head) { head_->next=nullptr; }
+
+LinkedList ::~LinkedList() {
+  Node* to_delete = head_;
+  if(head_!=nullptr) {
+    Node* after = head_->next;
+    while(after != nullptr) {
+    delete to_delete;
+    to_delete= after;
+    after= to_delete->next;
+    }
+  }
+  delete to_delete;
 }
-delete Delete;
+
+Node* LinkedList ::push (char letter, Node* transition_) {
+  Node* new_node= new Node;
+  new_node->data=letter;
+  new_node->next=nullptr;
+  transition_->next= new_node;
+  transition_= transition_->next;
+  return transition_;
 }
 
-Node* LinkedList::push (char letter, Node* transition_){
-Node* new_node= new Node;
-new_node->data_=letter;
-new_node->next_=NULL;
-transition_->next_= new_node;
-transition_= transition_->next_;
-return transition_;
-}
-
-
-
-void print(Node* n){
-    std::cout<<n->data_;
-if((n->next_) != 0){
-    n= n->next_;
+void print (Node* n) {
+  std::cout<<n->data;
+  if((n->next) != 0){
+    n= n->next;
     print(n);
+  }
 }
 
-}
- Node* LinkedList::GetHead(){ return head_; }
+ Node* LinkedList ::GetHead () { return head_; }
 
  void LinkedList::Reverse(){
- Node* Previous = NULL;
- Node* Current= head_;
- Node* Next = NULL;
+  Node* previous = nullptr;
+  Node* current= head_;
+  Node* after = nullptr;
 
- if(Current->next_ != NULL) {
-     Next = Current->next_;
-  while(Next != NULL){
-  Current->next_= Previous;
-  Previous = Current;
-  Current = Next;
-  Next = Next->next_;
- }
- Current->next_ = Previous;
- head_ = Current;}
+  if(current->next != nullptr) {
+    after = current->next;
+    while(after != nullptr){
+      current->next= previous;
+      previous = current;
+      current = after;
+      after = after->next;
+   }
+   current->next = previous;
+   head_ = current;
+   }
  }
 
 int main()
 {
-    int string_length;
-    std::string input;
-    std::getline(std::cin, input);
-    Node* head= new Node;
-    head->data_= input[0];
-    Node* transition= head;
-    LinkedList List(head);
-    string_length=input.length();
+  int string_length;
 
-    for(int i=1; i<string_length; i++){
-           transition= List.push(input[i], transition);
-    }
-    List.Reverse();
-    print(List.GetHead());
+  std::string input;
+  std::getline(std::cin, input);
+  Node* head= new Node;
 
+  head->data= input[0];
+  Node* transition= head;
+  LinkedList List(head);
+  string_length=input.length();
 
-    return 0;
+  for(int i=1; i<string_length; i++){
+    transition = List.push(input[i], transition);
+  }
+  List.Reverse();
+  print(List.GetHead());
+  return 0;
 }
