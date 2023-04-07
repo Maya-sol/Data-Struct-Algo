@@ -3,15 +3,12 @@
 
 int main()
 {
-    unsigned long long int Number, Reverse=0;
-    std::cin>> Number;
-    while(Number > 0)
-    {
-        Reverse = (Reverse * 10) + Number % 10;
-        Number /= 10;
-    }
-    std::cout<< Reverse;
-
-    return 0;
+  unsigned long long int number, reversed=0;
+  std::cin>> number;
+  for( ; number > 0; number /= 10){
+    reversed = (reversed * 10) + number % 10;
+  }
+  std::cout<< reversed;
+  return 0;
 }
 
