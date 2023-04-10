@@ -1,0 +1,142 @@
+#include <iostream>
+#include <string.h>
+
+struct Node {
+  int data;
+  Node* next;
+};
+
+class Vector{
+private:
+  int size_;
+  int capacity_;
+  Node* head_;
+public:
+  Vector();
+  void Push(int);
+  int Pop();
+  void AtLocation(int);
+  void Resize(int);
+  void Size();
+  int GetSize();
+  void Capacity();
+  void Clear();
+  ~Vector();
+};
+
+Vector::Vector(): size_(0), capacity_(1) {head_ = nullptr;}
+
+void Vector::Push (int number) {
+  Node * new_node = new Node();
+  new_node -> data = number;
+  new_node ->next = head_;
+  head_ = new_node;
+  size_ += 1;
+  if(size_ > capacity_) {capacity_ *= 2;}
+  std::cout <<"ok\n";
+}
+Vector::~Vector(){
+  Node* to_delete;
+  to_delete = head_;
+  for(int i=0; i<size_ -1; i++){
+    head_= head_->next;
+    delete to_delete;
+    to_delete = head_;
+  }
+  delete to_delete;
+}
+
+int Vector::GetSize(){ return size_;}
+
+int Vector::Pop(){
+Node* to_delete;
+to_delete = head_;
+int top = head_->data;
+head_ = head_->next;
+delete to_delete;
+size_-=1;
+if (size_ == (capacity_ / 2) && size_ !=0){ capacity_ /= 2;}
+return top;
+}
+
+void Vector::AtLocation(int location){
+  Node* Next=head_;
+  for(int i=0; i<(size_ - location -1); i++){
+    Next= Next ->next;
+  }
+  std::cout << Next->data << "\n";
+}
+
+void Vector::Resize(int new_capacity){
+  capacity_ = new_capacity;
+  std::cout <<"ok\n";
+}
+
+void Vector::Size(){
+  std::cout << size_ <<"\n";
+}
+
+void Vector::Capacity(){
+  std::cout << capacity_ << "\n";
+}
+
+void Vector::Clear(){
+  Node* to_delete;
+  to_delete = head_;
+  for(int i=0; i<size_-1; i++){
+    head_= head_->next;
+    delete to_delete;
+    to_delete = head_;
+  }
+  delete to_delete;
+  capacity_ = 1;
+  size_ = 0;
+  head_ = nullptr;
+  std::cout<< "ok\n";
+}
+
+int main()
+{
+  Vector vector;
+  std::string query;
+  int number=0;
+  for(; 1;) {
+    getline(std::cin>>std::ws, query);
+    if(query[0] == 'p'){
+      if(query[1] == 'u'){
+        for(int i=5; i<query.length(); i++){
+          number*=10;
+          number += (query[i] - 48);
+        }
+        vector.Push(number);
+        number=0;
+      } else if ((vector.GetSize()) != 0){
+        std::cout << vector.Pop() << "\n";
+      } else { std::cout << "error\n";}
+    } else if(query[0] == 'a'){
+      for(int i=3; i<query.length(); i++){
+        number*=10;
+        number += (query[i] - 48);
+      }
+      if (vector.GetSize() <= number){
+        std::cout << "error\n";
+      } else { vector.AtLocation(number);}
+      number=0;
+    } else if (query[0] == 's'){
+      vector.Size();
+    } else if (query[0] == 'r'){
+      for(int i=7; i<query.length(); i++){
+          number*=10;
+          number += (query[i] - 48);
+        }
+        vector.Resize(number);
+        number=0;
+    } else if (query[0] == 'c' && query[1] == 'a'){
+    vector.Capacity();
+    }else if (query[0] == 'c' && query[1] == 'l'){
+      vector.Clear();
+    } else { std::cout << "bye"; break;}
+  }
+
+  return 0;
+}
