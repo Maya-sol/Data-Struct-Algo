@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+
 struct Node {
   char data;
   Node* next;
@@ -10,55 +11,53 @@ class LinkedList {
   Node* head_;
  public:
   LinkedList(Node*);
-  Node* push(char, Node*);
+  Node* Push(char, Node*);
   Node* GetHead();
   void Reverse();
   ~LinkedList();
 };
 
-LinkedList ::LinkedList (Node* head): head_(head) { head_->next=nullptr; }
-
-LinkedList ::~LinkedList() {
+LinkedList::LinkedList(Node* head): head_(head) { head_->next = nullptr; }
+LinkedList::~LinkedList() {
   Node* to_delete = head_;
-  if(head_!=nullptr) {
+  if (head_ != nullptr) {
     Node* after = head_->next;
-    while(after != nullptr) {
+    while (after != nullptr) {
     delete to_delete;
-    to_delete= after;
-    after= to_delete->next;
+    to_delete = after;
+    after = to_delete->next;
     }
   }
   delete to_delete;
 }
 
-Node* LinkedList ::push (char letter, Node* transition_) {
-  Node* new_node= new Node;
-  new_node->data=letter;
-  new_node->next=nullptr;
-  transition_->next= new_node;
-  transition_= transition_->next;
+Node* LinkedList::Push(char letter, Node* transition_) {
+  Node* new_node = new Node;
+  new_node->data = letter;
+  new_node->next = nullptr;
+  transition_->next = new_node;
+  transition_ = transition_->next;
   return transition_;
 }
 
-void print (Node* n) {
-  std::cout<<n->data;
-  if((n->next) != 0){
-    n= n->next;
-    print(n);
+void Print(Node* n) {
+  std::cout<< n->data;
+  if ((n->next) != nullptr) {
+    n = n->next;
+    Print(n);
   }
 }
 
- Node* LinkedList ::GetHead () { return head_; }
+Node* LinkedList::GetHead() { return head_; }
 
- void LinkedList::Reverse(){
+void LinkedList::Reverse(){
   Node* previous = nullptr;
-  Node* current= head_;
+  Node* current = head_;
   Node* after = nullptr;
-
-  if(current->next != nullptr) {
+  if (current->next != nullptr) {
     after = current->next;
-    while(after != nullptr){
-      current->next= previous;
+    while (after != nullptr) {
+      current->next = previous;
       previous = current;
       current = after;
       after = after->next;
@@ -68,23 +67,21 @@ void print (Node* n) {
    }
  }
 
-int main()
-{
+int main() {
   int string_length;
-
   std::string input;
   std::getline(std::cin, input);
   Node* head= new Node;
 
-  head->data= input[0];
-  Node* transition= head;
-  LinkedList List(head);
-  string_length=input.length();
+  head->data = input[0];
+  Node* transition = head;
+  LinkedList list(head);
+  string_length = input.length();
 
-  for(int i=1; i<string_length; i++){
-    transition = List.push(input[i], transition);
+  for (int i = 1; i < string_length; i++) {
+    transition = list.Push(input[i], transition);
   }
-  List.Reverse();
-  print(List.GetHead());
+  list.Reverse();
+  Print(list.GetHead());
   return 0;
 }
