@@ -1,14 +1,11 @@
 #include <iostream>
 
-
-int main()
-{
-  unsigned long long int number, reversed=0;
+int main () {
+  unsigned long long int number, reversed = 0;
   std::cin>> number;
-  for( ; number > 0; number /= 10){
-    reversed = (reversed * 10) + number % 10;
+  for(; number > 0; number /= 10)  {
+    reversed = (reversed * 10) + (number % 10);
   }
   std::cout<< reversed;
   return 0;
 }
-
