@@ -9,78 +9,79 @@ struct Node {
 class LinkedList {
  private:
   Node* head_;
+
  public:
-  LinkedList(Node*);
-  Node* Push(char, Node*);
+  LinkedList(std::string);
   Node* GetHead();
   void Reverse();
   ~LinkedList();
 };
 
-LinkedList::LinkedList(Node* head): head_(head) { head_->next = nullptr; }
+LinkedList::LinkedList(std::string input) {
+  head_ = nullptr;
+  Node* transition;
+  for (size_t i = 0; i < input.length(); i++) {
+    Node* new_node = new Node;
+    if (i == 0) {
+      head_ = new_node;
+      transition = head_;
+    }
+    new_node->data = input[i];
+    new_node->next = nullptr;
+    if (i > 0) {
+      transition->next = new_node;
+      transition = transition->next;
+    }
+  }
+}
+
 LinkedList::~LinkedList() {
   Node* to_delete = head_;
   if (head_ != nullptr) {
     Node* after = head_->next;
     while (after != nullptr) {
-    delete to_delete;
-    to_delete = after;
-    after = to_delete->next;
+      delete to_delete;
+      to_delete = after;
+      after = to_delete->next;
     }
   }
   delete to_delete;
 }
 
-Node* LinkedList::Push(char letter, Node* transition_) {
-  Node* new_node = new Node;
-  new_node->data = letter;
-  new_node->next = nullptr;
-  transition_->next = new_node;
-  transition_ = transition_->next;
-  return transition_;
-}
-
 void Print(Node* n) {
-  std::cout<< n->data;
-  if ((n->next) != nullptr) {
-    n = n->next;
-    Print(n);
+  if (n != nullptr) {
+    std::cout << n->data;
+    if ((n->next) != nullptr) {
+      n = n->next;
+      Print(n);
+    }
   }
 }
 
 Node* LinkedList::GetHead() { return head_; }
 
-void LinkedList::Reverse(){
+void LinkedList::Reverse() {
   Node* previous = nullptr;
   Node* current = head_;
   Node* after = nullptr;
-  if (current->next != nullptr) {
+  if (current != nullptr && current->next != nullptr) {
     after = current->next;
     while (after != nullptr) {
       current->next = previous;
       previous = current;
       current = after;
       after = after->next;
-   }
-   current->next = previous;
-   head_ = current;
-   }
- }
+    }
+    current->next = previous;
+    head_ = current;
+  }
+}
 
 int main() {
   int string_length;
   std::string input;
   std::getline(std::cin, input);
-  Node* head= new Node;
-
-  head->data = input[0];
-  Node* transition = head;
-  LinkedList list(head);
-  string_length = input.length();
-
-  for (int i = 1; i < string_length; i++) {
-    transition = list.Push(input[i], transition);
-  }
+  LinkedList list(input);
   list.Reverse();
   Print(list.GetHead());
   return 0;
