@@ -1,0 +1,110 @@
+#include <iostream>
+#include <string>
+template <typename T>
+struct Node {
+  T data;
+  Node<T>* next;
+};
+
+template <class T>
+class Stack {
+ private:
+  Node<T>* head_;
+  size_t size_;
+
+ public:
+  Stack();
+  void Push(const T&);
+  T Pop();
+  T& Back();
+  size_t Size();
+  void Clear();
+  ~Stack();
+};
+
+template <class T>
+Stack<T>::Stack() : head_(nullptr), size_(0) {}
+
+template <class T>
+void Stack<T>::Push(const T& new_data) {
+  Node<T>* node = new Node<T>;
+  node->data = new_data;
+  node->next = head_;
+  head_ = node;
+  size_++;
+}
+
+template <class T>
+T Stack<T>::Pop() {
+  Node<T>* node = head_;
+  T info = head_->data;
+  head_ = head_->next;
+  delete node;
+  size_--;
+  return info;
+}
+
+template <class T>
+Stack<T>::~Stack() {
+  Node<T>* node = head_;
+  while (node != nullptr) {
+    node = node->next;
+    delete head_;
+    head_ = node;
+  }
+  delete node;
+}
+
+template <class T>
+T& Stack<T>::Back() {
+  return head_->data;
+}
+
+template <class T>
+size_t Stack<T>::Size() {
+  return size_;
+}
+
+template <class T>
+void Stack<T>::Clear() {
+  Node<T>* node = head_;
+  while (node != nullptr) {
+    node = node->next;
+    delete head_;
+    head_ = node;
+  }
+  size_ = 0;
+}
+
+int main() {
+  Stack<int> S;
+  std::string query;
+  int data;
+  while (std::cin >> query) {
+    if (query == "push") {
+      std::cin >> data;
+      S.Push(data);
+      std::cout << "ok\n";
+    } else if (query == "pop") {
+      if (S.Size() != 0) {
+        std::cout << S.Pop() << "\n";
+      } else {
+        std::cout << "error\n";
+      }
+    } else if (query == "back") {
+      if (S.Size() != 0) {
+        std::cout << S.Back() << "\n";
+      } else {
+        std::cout << "error\n";
+      }
+    } else if (query == "clear") {
+      S.Clear();
+      std::cout << "ok\n";
+    } else if (query == "size") {
+      std::cout << S.Size() << "\n";
+    } else if (query == "exit") {
+      std::cout << "bye";
+      return 0;
+    }
+  }
+}
