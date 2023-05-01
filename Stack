@@ -14,7 +14,7 @@ class Stack {
 
  public:
   Stack();
-  void Push(const T&);
+  void Push(const T& new_data);
   T Pop();
   T& Back();
   size_t Size();
@@ -36,6 +36,9 @@ void Stack<T>::Push(const T& new_data) {
 
 template <class T>
 T Stack<T>::Pop() {
+  if (size_ == 0) {
+    throw 1;
+  }
   Node<T>* node = head_;
   T info = head_->data;
   head_ = head_->next;
@@ -57,6 +60,9 @@ Stack<T>::~Stack() {
 
 template <class T>
 T& Stack<T>::Back() {
+  if (size_ == 0) {
+    throw 1;
+  }
   return head_->data;
 }
 
@@ -77,34 +83,32 @@ void Stack<T>::Clear() {
 }
 
 int main() {
-  Stack<int> S;
+  Stack<int> stack;
   std::string query;
   int data;
   while (std::cin >> query) {
     if (query == "push") {
       std::cin >> data;
-      S.Push(data);
+      stack.Push(data);
       std::cout << "ok\n";
-    } else if (query == "pop") {
-      if (S.Size() != 0) {
-        std::cout << S.Pop() << "\n";
-      } else {
-        std::cout << "error\n";
-      }
-    } else if (query == "back") {
-      if (S.Size() != 0) {
-        std::cout << S.Back() << "\n";
-      } else {
-        std::cout << "error\n";
-      }
     } else if (query == "clear") {
-      S.Clear();
+      stack.Clear();
       std::cout << "ok\n";
     } else if (query == "size") {
-      std::cout << S.Size() << "\n";
+      std::cout << stack.Size() << "\n";
     } else if (query == "exit") {
       std::cout << "bye";
       return 0;
+    }
+    try {
+      if (query == "pop") {
+        std::cout << stack.Pop() << "\n";
+
+      } else if (query == "back") {
+        std::cout << stack.Back() << "\n";
+      }
+    } catch (...) {
+      std::cout << "error\n";
     }
   }
 }
