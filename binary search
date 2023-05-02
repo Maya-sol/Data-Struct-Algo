@@ -1,0 +1,37 @@
+#include <iostream>
+
+bool BinarySearch(const int* begin, const int* end, int target) {
+  while (begin <= end) {
+    const int* middle = begin + ((end - begin) / 2);
+    if (*middle == target) {
+      return true;
+    }
+    if (*middle < target) {
+      begin = middle + 1;
+    } else {
+      end = middle - 1;
+    }
+  }
+  return false;
+}
+
+int main() {
+  int length, calls;
+  std::cin >> length;
+  int* numbers = new int[length];
+  for (int i = 0; i < length; i++) {
+    std::cin >> numbers[i];
+  }
+  std::cin >> calls;
+  for (int i = 0; i < calls; i++) {
+    int start, finish, target;
+    std::cin >> start >> finish >> target;
+    if (BinarySearch(numbers + start, numbers + finish - 1, target)) {
+      std::cout << "YES\n";
+    } else {
+      std::cout << "NO\n";
+    }
+  }
+  delete[] numbers;
+  return 0;
+}
