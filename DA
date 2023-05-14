@@ -2,16 +2,15 @@
 
 #include <iostream>
 
-
 template <class T>
 class Vector {
  public:
   Vector();
   ~Vector();
-  void Push(T);
-  void Resize(size_t);
+  void Push(T value);
+  void Resize(size_t new_capacity);
   T Pop();
-  T AtLocation(size_t) const;
+  T AtLocation(size_t index) const;
   size_t Size() const;
   size_t Capacity() const;
   void Clear();
@@ -34,6 +33,9 @@ Vector<T>::~Vector() {
 
 template <class T>
 void Vector<T>::Push(T value) {
+  if (capacity_ == 0) {
+    Resize(1);
+  }
   if (size_ == capacity_) {
     Resize(capacity_ * 2);
   }
@@ -43,6 +45,9 @@ void Vector<T>::Push(T value) {
 
 template <class T>
 T Vector<T>::Pop() {
+  if (size_ == 0) {
+    throw std::string("error\n");
+  }
   size_--;
   T returned = data_[size_];
   if (size_ == capacity_ / 2 && size_ != 0) {
@@ -54,16 +59,22 @@ T Vector<T>::Pop() {
 template <class T>
 void Vector<T>::Resize(size_t new_capacity) {
   T* new_array = new T[new_capacity];
-  for (size_t i = 0; i < size_; i++) {
+  for (size_t i = 0; i < size_ && i < new_capacity; i++) {
     new_array[i] = data_[i];
   }
   delete[] data_;
   data_ = new_array;
   capacity_ = new_capacity;
+  if (size_ > capacity_) {
+    size_ = capacity_;
+  }
 }
 
 template <class T>
 T Vector<T>::AtLocation(size_t index) const {
+  if (index >= size_) {
+    throw std::string("error\n");
+  }
   return data_[index];
 }
 
@@ -85,44 +96,45 @@ void Vector<T>::Clear() {
   data_ = new T[capacity_];
 }
 
+void MessagesAndInput(std::string query, int& num) {
+  if (query == "push" || query == "resize" || query == "at") {
+    std::cin >> num;
+  }
+  if (query == "push" || query == "resize" || query == "clear") {
+    std::cout << "ok\n";
+  }
+  if (query == "exit") {
+    std::cout << "bye";
+  }
+}
+
 int main() {
   Vector<int> vector;
   std::string query;
   int number = 0;
   while (std::cin >> query) {
-    if (query[0] == 'p') {
-      if (query[1] == 'u') {
-        std::cin >> number;
-        vector.Push(number);
-        std::cout << "ok\n";
-      } else if ((vector.Size()) != 0) {
-        std::cout << vector.Pop() << "\n";
-      } else {
-        std::cout << "error\n";
-      }
-    } else if (query[0] == 'a') {
-      std::cin >> number;
-      if (vector.Size() <= number) {
-        std::cout << "error\n";
-      } else {
-        std::cout << vector.AtLocation(number) << "\n";
-      }
-    } else if (query[0] == 's') {
+    MessagesAndInput(query, number);
+    if (query == "push") {
+      vector.Push(number);
+    } else if (query == "size") {
       std::cout << vector.Size() << "\n";
-    } else if (query[0] == 'r') {
-      std::cin >> number;
+    } else if (query == "resize") {
       vector.Resize(number);
-      std::cout << "ok\n";
-    } else if (query[0] == 'c' && query[1] == 'a') {
+    } else if (query == "capacity") {
       std::cout << vector.Capacity() << "\n";
-    } else if (query[0] == 'c' && query[1] == 'l') {
+    } else if (query == "clear") {
       vector.Clear();
-      std::cout << "ok\n";
-    } else if (query[0] == 'e') {
-      std::cout << "bye";
+    } else if (query == "exit") {
       return 0;
     }
+    try {
+      if (query == "pop") {
+        std::cout << vector.Pop() << "\n";
+      } else if (query == "at") {
+        std::cout << vector.AtLocation(number) << "\n";
+      }
+    } catch (std::string message) {
+      std::cout << message;
+    }
   }
-
-  return 0;
 }
