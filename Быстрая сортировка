@@ -1,0 +1,61 @@
+#include <bits/stdc++.h>
+
+#include <iostream>
+
+int Split(int* array, int start, int end) {
+  int pivot_index = end;
+  int swap;
+  while (1) {
+    while (array[start] < array[pivot_index]) {
+      start++;
+    }
+    while (array[end] > array[pivot_index]) {
+      end--;
+    }
+    if (start < end) {
+      swap = array[start];
+      array[start] = array[end];
+      array[end] = swap;
+      end--;
+      start++;
+    } else {
+      break;
+    }
+  }
+  swap = array[start];
+  array[start] = array[pivot_index];
+  array[pivot_index] = swap;
+  return start;
+}
+
+void RandomPivot(int* array, int start, int end) {
+  srand(time(NULL));
+  int random_index = start + rand() % (end - start);
+  int swap = array[end];
+  array[end] = array[random_index];
+  array[random_index] = swap;
+}
+
+void QuickSort(int* array, int start, int end) {
+  if (start < end) {
+    RandomPivot(array, start, end);
+    int Split_point = Split(array, start, end);
+    QuickSort(array, start, Split_point - 1);
+    QuickSort(array, Split_point + 1, end);
+  }
+}
+
+int main() {
+  int Number;
+  std::cin >> Number;
+  int* array = new int[Number];
+  for (int i = 0; i < Number; i++) {
+    std::cin >> array[i];
+  }
+  QuickSort(array, 0, Number - 1);
+  for (int i = 0; i < Number; i++) {
+    std::cout << array[i] << " ";
+  }
+  delete[] array;
+  return 0;
+}
