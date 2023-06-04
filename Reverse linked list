@@ -1,0 +1,88 @@
+#include <iostream>
+#include <string>
+
+struct Node {
+  char data;
+  Node* next;
+};
+
+class LinkedList {
+ private:
+  Node* head_;
+
+ public:
+  LinkedList(std::string);
+  Node* GetHead();
+  void Reverse();
+  ~LinkedList();
+};
+
+LinkedList::LinkedList(std::string input) {
+  head_ = nullptr;
+  Node* transition;
+  for (size_t i = 0; i < input.length(); i++) {
+    Node* new_node = new Node;
+    if (i == 0) {
+      head_ = new_node;
+      transition = head_;
+    }
+    new_node->data = input[i];
+    new_node->next = nullptr;
+    if (i > 0) {
+      transition->next = new_node;
+      transition = transition->next;
+    }
+  }
+}
+
+LinkedList::~LinkedList() {
+  Node* to_delete = head_;
+  if (head_ != nullptr) {
+    Node* after = head_->next;
+    while (after != nullptr) {
+      delete to_delete;
+      to_delete = after;
+      after = to_delete->next;
+    }
+  }
+  delete to_delete;
+}
+
+void Print(Node* n) {
+  if (n != nullptr) {
+    std::cout << n->data;
+    if ((n->next) != nullptr) {
+      n = n->next;
+      Print(n);
+    }
+  }
+}
+
+Node* LinkedList::GetHead() { return head_; }
+
+void LinkedList::Reverse() {
+  Node* previous = nullptr;
+  Node* current = head_;
+  Node* after = nullptr;
+  if (current != nullptr && current->next != nullptr) {
+    after = current->next;
+    while (after != nullptr) {
+      current->next = previous;
+      previous = current;
+      current = after;
+      after = after->next;
+    }
+    current->next = previous;
+    head_ = current;
+  }
+}
+
+int main() {
+  int string_length;
+  std::string input;
+  std::getline(std::cin, input);
+  LinkedList list(input);
+  list.Reverse();
+  Print(list.GetHead());
+  return 0;
+}
