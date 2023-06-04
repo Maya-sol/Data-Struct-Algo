@@ -1,0 +1,212 @@
+#include <iostream>
+#include <string>
+template <typename T>
+struct Node {
+  T value;
+  T minimum;
+  Node<T>* next;
+};
+
+template <class T>
+class MinStack {
+ private:
+  Node<T>* head_;
+  size_t size_;
+
+ public:
+  MinStack();
+  ~MinStack();
+  void Push(const T& new_data);
+  T Pop();
+  T& Back();
+  size_t Size();
+  void Clear();
+  T Minimum();
+};
+
+template <class T>
+MinStack<T>::MinStack() : head_(nullptr), size_(0) {}
+
+template <class T>
+MinStack<T>::~MinStack() {
+  Node<T>* node = head_;
+  while (node != nullptr) {
+    node = node->next;
+    delete head_;
+    head_ = node;
+  }
+  delete head_;
+}
+template <class T>
+void MinStack<T>::Push(const T& new_data) {
+  Node<T>* node = new Node<T>;
+  node->value = new_data;
+  if (size_ == 0) {
+    node->minimum = new_data;
+  } else {
+    if (head_->minimum > new_data) {
+      node->minimum = new_data;
+    } else {
+      node->minimum = head_->minimum;
+    }
+  }
+  node->next = head_;
+  head_ = node;
+  size_++;
+}
+
+template <class T>
+T MinStack<T>::Pop() {
+  if (size_ == 0) {
+    throw 1;
+  }
+  Node<T>* node = head_;
+  T info = head_->value;
+  head_ = head_->next;
+  delete node;
+  size_--;
+  return info;
+}
+
+template <class T>
+T& MinStack<T>::Back() {
+  if (size_ == 0) {
+    throw 1;
+  }
+  return head_->value;
+}
+
+template <class T>
+size_t MinStack<T>::Size() {
+  return size_;
+}
+
+template <class T>
+void MinStack<T>::Clear() {
+  Node<T>* node = head_;
+  while (node != nullptr) {
+    node = node->next;
+    delete head_;
+    head_ = node;
+  }
+  delete node;
+  head_ = nullptr;
+  size_ = 0;
+}
+template <class T>
+T MinStack<T>::Minimum() {
+  return head_->minimum;
+}
+
+template <class T>
+class Minqueue {
+ private:
+  MinStack<T> input_;
+  MinStack<T> output_;
+  size_t size_;
+
+ public:
+  Minqueue();
+  void Enqueue(T data);
+  T Dequeue();
+  T Front();
+  size_t Size();
+  void Clear();
+  T Minimum();
+};
+template <typename T>
+Minqueue<T>::Minqueue() : size_(0) {}
+
+template <typename T>
+void Minqueue<T>::Enqueue(T data) {
+  input_.Push(data);
+  size_++;
+}
+
+template <typename T>
+T Minqueue<T>::Dequeue() {
+  if (size_ == 0) {
+    throw 1;
+  }
+  if (output_.Size() == 0) {
+    while (input_.Size() != 0) {
+      output_.Push(input_.Pop());
+    }
+  }
+  size_--;
+  return output_.Pop();
+}
+
+template <typename T>
+T Minqueue<T>::Front() {
+  if (size_ == 0) {
+    throw 1;
+  }
+  if (output_.Size() == 0) {
+    while (input_.Size() > 0) {
+      output_.Push(input_.Pop());
+    }
+  }
+  return output_.Back();
+}
+
+template <typename T>
+size_t Minqueue<T>::Size() {
+  return size_;
+}
+
+template <typename T>
+void Minqueue<T>::Clear() {
+  input_.Clear();
+  output_.Clear();
+  size_ = 0;
+}
+
+template <typename T>
+T Minqueue<T>::Minimum() {
+  if (size_ == 0) {
+    throw 1;
+  }
+  if (input_.Size() == 0) {
+    return output_.Minimum();
+  }
+  if (output_.Size() == 0) {
+    return input_.Minimum();
+  }
+  if (input_.Minimum() < output_.Minimum()) {
+    return input_.Minimum();
+  }
+  return output_.Minimum();
+}
+
+int main() {
+  Minqueue<int> list;
+  std::string query;
+  int info, repetition;
+  std::cin >> repetition;
+  for (int i = 0; i < repetition; i++) {
+    std::cin >> query;
+    if (query == "enqueue") {
+      std::cin >> info;
+      list.Enqueue(info);
+      std::cout << "ok\n";
+    } else if (query == "clear") {
+      list.Clear();
+      std::cout << "ok\n";
+    } else if (query == "size") {
+      std::cout << list.Size() << "\n";
+    }
+    try {
+      if (query == "dequeue") {
+        std::cout << list.Dequeue() << "\n";
+      } else if (query == "front") {
+        std::cout << list.Front() << "\n";
+      } else if (query == "min") {
+        std::cout << list.Minimum() << "\n";
+      }
+    } catch (...) {
+      std::cout << "error\n";
+    }
+  }
+  return 0;
+}
