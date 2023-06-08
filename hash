@@ -1,0 +1,74 @@
+#include <iostream>
+#include <vector>
+
+class Hash {
+ private:
+  int capacity_;
+  std::vector<std::vector<int>> hash_table_;
+
+ public:
+  Hash(int number);
+  ~Hash();
+  void AddElement(int value);
+  void DeleteElement(int value);
+  bool FindElement(int value);
+};
+
+Hash::Hash(int number) : capacity_(number) {
+  std::vector<std::vector<int>> hash_table(number);
+  hash_table_ = hash_table;
+}
+
+Hash::~Hash() {}
+
+void Hash::AddElement(int value) {
+  int key = value % capacity_;
+  for (long unsigned int i = 0; i < hash_table_[key].size(); i++) {
+    if (hash_table_[key][i] == value) {
+      return;
+    }
+  }
+  hash_table_[key].push_back(value);
+}
+
+void Hash::DeleteElement(int value) {
+  int key = value % capacity_;
+  for (long unsigned int i = 0; i < hash_table_[key].size(); i++) {
+    if (hash_table_[key][i] == value) {
+      hash_table_[key].erase(hash_table_[key].begin() + i);
+    }
+  }
+}
+
+bool Hash::FindElement(int value) {
+  int key = value % capacity_;
+  for (long unsigned int i = 0; i < hash_table_[key].size(); i++) {
+    if (hash_table_[key][i] == value) {
+      return true;
+    }
+  }
+  return false;
+}
+
+int main() {
+  int number;
+  std::cin >> number;
+  Hash hash_table(number);
+  char query;
+  int element;
+  for (int i = 0; i < number; i++) {
+    std::cin >> query >> element;
+    if (query == '+') {
+      hash_table.AddElement(element);
+    } else if (query == '-') {
+      hash_table.DeleteElement(element);
+    } else if (query == '?') {
+      if (hash_table.FindElement(element)) {
+        std::cout << "YES\n";
+      } else {
+        std::cout << "NO\n";
+      }
+    }
+  }
+  return 0;
+}
