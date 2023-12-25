@@ -1,0 +1,100 @@
+#include <iostream>
+#include <vector>
+
+struct Node {
+  int value;
+  int start;
+  int finish;
+  int lazy;
+};
+int ConstructTree(std::vector<Node>& tree, std::vector<int>& occupancy,
+                  int capacity, int start, int finish, int index) {
+  tree[index].start = start;
+  tree[index].finish = finish;
+  tree[index].lazy = 0;
+  if (start == finish) {
+    tree[index].value = capacity - occupancy[start];
+    return tree[index].value;
+  }
+  int mid = (start + finish) / 2;
+  tree[index].value =
+      ConstructTree(tree, occupancy, capacity, start, mid, index * 2 + 1) +
+      ConstructTree(tree, occupancy, capacity, mid + 1, finish, index * 2 + 2);
+  return tree[index].value;
+}
+
+bool Check(std::vector<Node>& tree, int left_bound, int right_bound, int amount,
+           int index) {
+  if (tree[index].start > right_bound || tree[index].finish < left_bound) {
+    return true;
+  }
+  if (tree[index].start == tree[index].finish) {
+    tree[index].value -= tree[index].lazy;
+    tree[index].lazy = 0;
+    return (tree[index].value >= amount);
+  }
+  if (tree[index].lazy != 0) {
+    tree[index].value -=
+        (tree[index].finish - tree[index].start + 1) * tree[index].lazy;
+    tree[index * 2 + 1].lazy += tree[index].lazy;
+    tree[index * 2 + 2].lazy += tree[index].lazy;
+    tree[index].lazy = 0;
+  }
+  return (Check(tree, left_bound, right_bound, amount, 2 * index + 1) &&
+          Check(tree, left_bound, right_bound, amount, 2 * index + 2));
+}
+
+int Update(std::vector<Node>& tree, int left_bound, int right_bound, int amount,
+           int index) {
+  if (tree[index].lazy != 0) {
+    tree[index].value -=
+        (tree[index].finish - tree[index].start + 1) * tree[index].lazy;
+    if (tree[index].finish != tree[index].start) {
+      tree[index * 2 + 1].lazy += tree[index].lazy;
+      tree[index * 2 + 2].lazy += tree[index].lazy;
+    }
+    tree[index].lazy = 0;
+  }
+  if (tree[index].start > right_bound || tree[index].finish < left_bound) {
+    return tree[index].value;
+  }
+  if (tree[index].finish <= right_bound && tree[index].start >= left_bound) {
+    tree[index].value -= (tree[index].finish - tree[index].start + 1) * amount;
+    if (tree[index].finish != tree[index].start) {
+      tree[index * 2 + 1].lazy += amount;
+      tree[index * 2 + 2].lazy += amount;
+    }
+    return tree[index].value;
+  }
+  tree[index].value =
+      Update(tree, left_bound, right_bound, amount, index * 2 + 1) +
+      Update(tree, left_bound, right_bound, amount, index * 2 + 2);
+  return tree[index].value;
+}
+
+int main() {
+  int huts, capacity, attempts, start, finish, amount;
+  std::cin >> huts;
+  std::vector<int> occupancy(huts);
+  for (int i = 0; i < huts; i++) {
+    std::cin >> occupancy[i];
+  }
+  std::cin >> capacity;
+  std::vector<Node> tree(4 * huts);
+  ConstructTree(tree, occupancy, capacity, 0, huts - 1, 0);
+  std::cin >> attempts;
+  std::vector<int> show;
+  for (int i = 0; i < attempts; i++) {
+    std::cin >> start >> finish >> amount;
+    if (Check(tree, start, finish, amount, 0)) {
+      Update(tree, start, finish, amount, 0);
+    } else {
+      show.push_back(i);
+    }
+  }
+  for (size_t i = 0; i < show.size(); i++) {
+    std::cout << show[i] << " ";
+  }
+
+  return 0;
+}
