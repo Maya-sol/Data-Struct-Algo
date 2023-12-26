@@ -1,11 +1,25 @@
 #include <bits/stdc++.h>
 
-void AddEdge(std::vector<std::vector<int>>& graph, int head, int tail) {
-  graph[head].push_back(tail);
-  graph[tail].push_back(head);
+class Graph {
+ private:
+  std::vector<std::vector<int>> adj;
+
+ public:
+  Graph(int number);
+  void AddEdge(int head, int tail);
+  std::vector<std::vector<int>> get();
+};
+
+Graph::Graph(int number) : adj(number) {}
+
+void Graph::AddEdge(int head, int tail) {
+  adj[head].push_back(tail);
+  adj[tail].push_back(head);
 }
 
-void BFS(std::vector<std::vector<int>>& graph, int source, int vertices_number,
+std::vector<std::vector<int>> Graph::get() { return adj; }
+
+void BFS(std::vector<std::vector<int>> graph, int source, int vertices_number,
          std::vector<int>& parent, std::vector<int>& distance) {
   std::list<int> queue_of_vertices;
   std::vector<bool> visited(vertices_number, false);
@@ -44,7 +58,7 @@ int CommonShortestDistance(int number_of_vertices,
   return answer;
 }
 
-int ShortestDistances(std::vector<std::vector<int>>& graph, int leon,
+int ShortestDistances(std::vector<std::vector<int>> graph, int leon,
                       int matelda, int milk, int number_of_vertices) {
   std::vector<int> leon_parents(number_of_vertices);
   std::vector<int> leon_distance(number_of_vertices);
@@ -62,7 +76,7 @@ int ShortestDistances(std::vector<std::vector<int>>& graph, int leon,
 int main() {
   int vertices_number;
   std::cin >> vertices_number;
-  std::vector<std::vector<int>> graph(vertices_number);
+  Graph adj(vertices_number);
   int edges_number;
   std::cin >> edges_number;
   int leon, matelda, milk;
@@ -70,9 +84,9 @@ int main() {
   for (int i = 0; i < edges_number; i++) {
     int head, tail;
     std::cin >> head >> tail;
-    AddEdge(graph, head - 1, tail - 1);
+    adj.AddEdge(head - 1, tail - 1);
   }
-  int answer = ShortestDistances(graph, leon - 1, matelda - 1, milk - 1,
+  int answer = ShortestDistances(adj.get(), leon - 1, matelda - 1, milk - 1,
                                  vertices_number);
   std::cout << answer;
   return 0;
