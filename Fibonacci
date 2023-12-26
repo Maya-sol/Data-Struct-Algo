@@ -1,18 +1,27 @@
 #include <iostream>
+#include <cstdint>
 struct Array {
-  long long unsigned int a1, a2, a3, a4;
+  uint64_t entry11, entry12, entry21, entry22;
 };
 
 Array Multiplication(Array first, Array second) {
-  Array temp;
-  temp.a1 = (first.a1 * second.a1 + first.a2 * second.a3) % 1000003;
-  temp.a2 = (first.a1 * second.a2 + first.a2 * second.a4) % 1000003;
-  temp.a3 = (first.a3 * second.a1 + first.a4 * second.a3) % 1000003;
-  temp.a4 = (first.a3 * second.a2 + first.a4 * second.a4) % 1000003;
-  return temp;
+  Array temporary;
+  temporary.entry11 =
+      (first.entry11 * second.entry11 + first.entry12 * second.entry21) %
+      1000003;
+  temporary.entry12 =
+      (first.entry11 * second.entry12 + first.entry12 * second.entry22) %
+      1000003;
+  temporary.entry21 =
+      (first.entry21 * second.entry11 + first.entry22 * second.entry21) %
+      1000003;
+  temporary.entry22 =
+      (first.entry21 * second.entry12 + first.entry22 * second.entry22) %
+      1000003;
+  return temporary;
 }
 
-Array Power(long long unsigned int num, Array base = {1, 1, 1, 0}) {
+Array Power(uint64_t num, Array base = {1, 1, 1, 0}) {
   if (num == 1) {
     return base;
   }
@@ -22,7 +31,7 @@ Array Power(long long unsigned int num, Array base = {1, 1, 1, 0}) {
   return Multiplication(base, Power(num / 2, Multiplication(base, base)));
 }
 
-long long unsigned int Fibonacci(long long unsigned int num) {
+uint64_t Fibonacci(uint64_t num) {
   if (num == 1 || num == 0) {
     return 0;
   }
@@ -31,11 +40,11 @@ long long unsigned int Fibonacci(long long unsigned int num) {
   }
   Array result;
   result = Power(num - 3);
-  return (result.a1 + result.a2) % 1000003;
+  return (result.entry11 + result.entry12) % 1000003;
 }
 
 int main() {
-  long long unsigned int number;
+  uint64_t number;
   std::cin >> number;
   number = number % 2000008;
   std::cout << Fibonacci(number);
