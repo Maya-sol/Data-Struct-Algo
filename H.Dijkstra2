@@ -1,0 +1,51 @@
+#include <bits/stdc++.h>
+
+#include <iostream>
+#include <vector>
+
+double Dijkstra(std::vector<std::vector<std::pair<int, int>>> adj,
+                int universes, int flights, int start, int finish) {
+  std::vector<double> cost(universes + 1, std::numeric_limits<double>::max());
+  std::vector<double> flight(universes + 1, -1);
+  cost[start] = 0;
+  flight[start] = 0;
+  std::priority_queue<std::pair<double, size_t>,
+                      std::vector<std::pair<double, size_t>>,
+                      std::greater<std::pair<double, size_t>>>
+      Q;
+  size_t current;
+  Q.push({0, start});
+  while (!Q.empty()) {
+    current = Q.top().second;
+    Q.pop();
+    for (int i = 0; i < adj[current].size(); i++) {
+      if ((cost[adj[current][i].second] >
+           cost[current] + adj[current][i].first) &&
+          flight[current] < flights) {
+        cost[adj[current][i].second] = cost[current] + adj[current][i].first;
+        Q.push({cost[adj[current][i].second], adj[current][i].second});
+        flight[adj[current][i].second] = flight[current] + 1;
+      }
+    }
+  }
+  if (cost[finish] == std::numeric_limits<double>::max()) {
+    return -1;
+  }
+  return cost[finish];
+}
+
+int main() {
+  int universes, teleportations, flights, start, finish;
+  std::cin >> universes >> teleportations >> flights >> start >> finish;
+  std::vector<std::vector<std::pair<int, int>>> adj(universes + 1);
+  int head, tail, weight;
+  for (int i = 0; i < teleportations; i++) {
+    std::cin >> head >> tail >> weight;
+    adj[head].push_back(std::make_pair(weight, tail));
+  }
+  double answer = Dijkstra(adj, universes, flights, start, finish);
+
+  std::cout << answer;
+
+  return 0;
+}
