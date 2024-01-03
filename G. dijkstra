@@ -1,0 +1,46 @@
+#include <bits/stdc++.h>
+
+#include <iostream>
+#include <vector>
+
+
+double Dijkstra(int first_cost, int second_cost, int universes, int start,
+                int finish) {
+  std::vector<double> costs(universes, std::numeric_limits<double>::max());
+  costs[start] = 0;
+  std::priority_queue<std::pair<double, size_t>,
+                      std::vector<std::pair<double, size_t>>,
+                      std::greater<std::pair<double, size_t>>>
+      use;
+  use.push({0, start});
+  size_t current, next;
+  while (!use.empty()) {
+    current = use.top().second;
+    use.pop();
+    if (current != finish) {
+      next = (current + 1) % universes;
+      if (costs[next] > costs[current] + first_cost) {
+        costs[next] = costs[current] + first_cost;
+        use.push({costs[next], next});
+      } else {
+        continue;
+      }
+      next = (current * current % universes + 1) % universes;
+      if (costs[next] > costs[current] + second_cost) {
+        costs[next] = costs[current] + second_cost;
+        use.push({costs[next], next});
+      }
+    }
+  }
+  return costs[finish];
+}
+
+int main() {
+  int first_cost, second_cost, universes, start, finish;
+  std::cin >> first_cost >> second_cost >> universes >> start >> finish;
+  double answer = Dijkstra(first_cost, second_cost, universes, start, finish);
+
+  std::cout << answer;
+
+  return 0;
+}
