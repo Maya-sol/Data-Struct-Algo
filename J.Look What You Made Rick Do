@@ -1,0 +1,36 @@
+#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+
+void FindPaths(std::vector<std::vector<bool>>& adj, int universes) {
+  for (int k = 0; k < universes; k++) {
+    for (int i = 0; i < universes; i++) {
+      for (int j = 0; j < universes; j++) {
+        if (adj[i][k] && adj[k][j]) {
+          adj[i][j] = 1;
+        }
+      }
+    }
+  }
+}
+
+int main() {
+  int universes;
+  std::cin >> universes;
+  std::vector<std::vector<bool>> adj(universes, std::vector<bool>(universes));
+  char temporary;
+  for (int i = 0; i < universes; i++) {
+    for (int j = 0; j < universes; j++) {
+      std::cin >> temporary;
+      adj[i][j] = temporary - '0';
+    }
+  }
+  FindPaths(adj, universes);
+  for (int i = 0; i < universes; i++) {
+    for (int j = 0; j < universes; j++) {
+      std::cout << adj[i][j];
+    }
+    std::cout << "\n";
+  }
+  return 0;
+}
