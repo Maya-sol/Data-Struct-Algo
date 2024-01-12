@@ -1,0 +1,64 @@
+#include <bits/stdc++.h>
+
+void AddEdge(std::vector<std::vector<size_t>>& adj, size_t head, size_t tail) {
+  adj[head].push_back(tail);
+  adj[tail].push_back(head);
+}
+
+void DFS(std::vector<std::vector<size_t>>& paths,
+         std::vector<std::vector<size_t>>& adj, std::vector<size_t>& pre_num,
+         std::vector<size_t>& post_num, size_t parent, size_t node,
+         size_t& time) {
+  pre_num[node] = ++time;
+  for (size_t j = 0; j < adj[node].size(); j++) {
+    if (adj[node][j] != parent) {
+      paths[adj[node][j]] = paths[node];
+      paths[adj[node][j]].push_back(adj[node][j]);
+      DFS(paths, adj, pre_num, post_num, node, adj[node][j], time);
+    }
+  }
+  post_num[node] = ++time;
+}
+
+size_t Find(std::vector<std::vector<size_t>>& paths,
+            std::vector<size_t>& pre_num, std::vector<size_t>& post_num,
+            size_t a1, size_t a2) {
+  if ((pre_num[a1] <= pre_num[a2]) && (post_num[a2] <= post_num[a1])) {
+    return a1;
+  }
+  if ((pre_num[a2] <= pre_num[a1]) && (post_num[a1] <= post_num[a2])) {
+    return a2;
+  }
+  size_t u = paths[a1][0], size1 = paths[a1].size();
+  for (size_t i = 0; i < size1; i++) {
+    u = paths[a1][i];
+    if (!(pre_num[u] <= pre_num[a2] && post_num[a2] <= post_num[u])) {
+      return paths[a1][i - 1];
+    }
+  }
+  return u;
+}
+
+int main() {
+  size_t islands, queries, time = 0;
+  std::cin >> islands >> queries;
+  std::vector<std::vector<size_t>> adj(islands), paths(islands);
+  paths[0].push_back(0);
+  std::vector<size_t> pre_num(islands), post_num(islands);
+  size_t parent;
+  for (size_t i = 1; i < islands; i++) {
+    std::cin >> parent;
+    AddEdge(adj, i, parent);
+  }
+  DFS(paths, adj, pre_num, post_num, 0, 0, time);
+  size_t a1, a2, x, y, z, sum = 0, v = 0;
+  std::cin >> a1 >> a2 >> x >> y >> z;
+  for (size_t i = 0; i < queries; i++) {
+    v = Find(paths, pre_num, post_num, (a1 + v) % islands, a2);
+    sum += v;
+    a1 = (x * a1 + y * a2 + z) % islands;
+    a2 = (x * a2 + y * a1 + z) % islands;
+  }
+  std::cout << sum;
+  return 0;
+}
