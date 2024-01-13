@@ -1,7 +1,22 @@
 #include <bits/stdc++.h>
 
-#include <iostream>
-#include <vector>
+class Graph {
+ private:
+  std::vector<std::vector<std::pair<int, int>>> adj;
+
+ public:
+  Graph(int number);
+  void AddEdge(int head, int tail, int weight);
+  std::vector<std::vector<std::pair<int, int>>> get();
+};
+
+Graph::Graph(int number) : adj(number) {}
+
+void Graph::AddEdge(int head, int tail, int weight) {
+  adj[head].push_back(std::make_pair(weight, tail));
+}
+
+std::vector<std::vector<std::pair<int, int>>> Graph::get() { return adj; }
 
 double Dijkstra(std::vector<std::vector<std::pair<int, int>>> adj,
                 int universes, int flights, int start, int finish) {
@@ -37,13 +52,13 @@ double Dijkstra(std::vector<std::vector<std::pair<int, int>>> adj,
 int main() {
   int universes, teleportations, flights, start, finish;
   std::cin >> universes >> teleportations >> flights >> start >> finish;
-  std::vector<std::vector<std::pair<int, int>>> adj(universes + 1);
+  Graph adj(universes + 1);
   int head, tail, weight;
   for (int i = 0; i < teleportations; i++) {
     std::cin >> head >> tail >> weight;
-    adj[head].push_back(std::make_pair(weight, tail));
+    adj.AddEdge(head, tail, weight);
   }
-  double answer = Dijkstra(adj, universes, flights, start, finish);
+  double answer = Dijkstra(adj.get(), universes, flights, start, finish);
 
   std::cout << answer;
 
