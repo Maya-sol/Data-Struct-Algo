@@ -1,0 +1,61 @@
+#include <cstdint>
+#include <iostream>
+#include <vector>
+
+std::vector<std::vector<uint64_t>> Multiplication(
+    std::vector<std::vector<uint64_t>> a,
+    std::vector<std::vector<uint64_t>> b) {
+  std::vector<std::vector<uint64_t>> answer(5, std::vector<uint64_t>(5, 0));
+  for (int i = 0; i < 5; i++) {
+    for (int j = 0; j < 5; j++) {
+      for (int k = 0; k < 5; k++) {
+        answer[i][j] += (a[i][k] * b[k][j]) % 1000003;
+      }
+      answer[i][j] %= 1000003;
+    }
+  }
+  return answer;
+}
+
+std::vector<std::vector<uint64_t>> Power(
+    uint64_t num, std::vector<std::vector<uint64_t>> matrix) {
+  if (num == 1) {
+    return matrix;
+  }
+  if ((num % 2) == 0) {
+    std::vector<std::vector<uint64_t>> temporary = Power(num / 2, matrix);
+    return Multiplication(temporary, temporary);
+  }
+  return Multiplication(Power(num - 1, matrix), matrix);
+}
+
+uint64_t Calculate(uint64_t num) {
+  std::vector<uint64_t> dp(5, 1);
+  dp[2] = 2;
+  dp[3] = 4;
+  dp[4] = 8;
+  if (num <= 5) {
+    return dp[num - 1];
+  }
+  std::vector<std::vector<uint64_t>> matrix(5, std::vector<uint64_t>(5, 0));
+  for (int i = 1; i < 5; i++) {
+    matrix[0][i] = 1;
+    matrix[i][i - 1] = 1;
+  }
+  matrix[0][0] = 1;
+  std::vector<std::vector<uint64_t>> answer(5, std::vector<uint64_t>(5, 0));
+  answer = Power(num - 5, matrix);
+  uint64_t total = 0;
+  for (int i = 0; i < 5; i++) {
+    total += answer[0][i] * dp[4 - i];
+  }
+  return total % 1000003;
+}
+
+int main() {
+  uint64_t num;
+  std::cin >> num;
+  uint64_t ways = Calculate(num);
+  std::cout << ways;
+  return 0;
+}
