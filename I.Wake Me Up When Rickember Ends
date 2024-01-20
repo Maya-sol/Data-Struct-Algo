@@ -1,0 +1,61 @@
+#include <bits/stdc++.h>
+
+class Graph {
+ private:
+  std::vector<std::vector<std::pair<double, int>>> adj;
+
+ public:
+  Graph(int number);
+  void AddEdge(double head, double tail, double weight);
+  std::vector<std::vector<std::pair<double, int>>> get();
+};
+
+Graph::Graph(int number) : adj(number) {}
+
+void Graph::AddEdge(double head, double tail, double weight) {
+    adj[head].push_back(std::make_pair((100 - weight) / 100, tail));
+    adj[tail].push_back(std::make_pair((100 - weight) / 100, head));
+}
+
+std::vector<std::vector<std::pair<double, int>>> Graph::get() { return adj; }
+
+double Dijkstra(std::vector<std::vector<std::pair<double, int>>> adj,
+                int universes, int start, int finish) {
+  std::vector<double> cost(universes + 1, std::numeric_limits<double>::min());
+  cost[start] = 1;
+  std::priority_queue<std::pair<double, size_t>,
+                      std::vector<std::pair<double, size_t>>,
+                      std::greater<std::pair<double, size_t>>>
+      Q;
+  size_t current;
+  Q.push({1, start});
+  while (!Q.empty()) {
+    current = Q.top().second;
+    Q.pop();
+    for (int i = 0; i < adj[current].size(); i++) {
+      if (cost[adj[current][i].second] <
+          cost[current] * adj[current][i].first) {
+        cost[adj[current][i].second] = cost[current] * adj[current][i].first;
+        Q.push({cost[adj[current][i].second], adj[current][i].second});
+      }
+    }
+  }
+  return cost[finish];
+}
+
+int main() {
+  int universes, teleportations, start, finish;
+  std::cin >> universes >> teleportations >> start >> finish;
+  Graph adj(universes + 1);
+  double head, tail, weight;
+  for (int i = 0; i < teleportations; i++) {
+    std::cin >> head >> tail >> weight;
+    adj.AddEdge(head, tail, weight);
+  }
+  double answer = Dijkstra(adj.get(), universes, start, finish);
+  answer = 1 - answer;
+  std::cout.precision(2);
+  std::cout << std::noshowpoint << answer;
+
+  return 0;
+}
