@@ -1,0 +1,52 @@
+#include <iostream>
+#include <cstdint>
+struct Array {
+  uint64_t entry11, entry12, entry21, entry22;
+};
+
+Array Multiplication(Array first, Array second) {
+  Array temporary;
+  temporary.entry11 =
+      (first.entry11 * second.entry11 + first.entry12 * second.entry21) %
+      1000003;
+  temporary.entry12 =
+      (first.entry11 * second.entry12 + first.entry12 * second.entry22) %
+      1000003;
+  temporary.entry21 =
+      (first.entry21 * second.entry11 + first.entry22 * second.entry21) %
+      1000003;
+  temporary.entry22 =
+      (first.entry21 * second.entry12 + first.entry22 * second.entry22) %
+      1000003;
+  return temporary;
+}
+
+Array Power(uint64_t num, Array base = {1, 1, 1, 0}) {
+  if (num == 1) {
+    return base;
+  }
+  if (num % 2 == 0) {
+    return Power(num / 2, Multiplication(base, base));
+  }
+  return Multiplication(base, Power(num / 2, Multiplication(base, base)));
+}
+
+uint64_t Fibonacci(uint64_t num) {
+  if (num == 1 || num == 0) {
+    return 0;
+  }
+  if (num == 2 || num == 3) {
+    return 1;
+  }
+  Array result;
+  result = Power(num - 3);
+  return (result.entry11 + result.entry12) % 1000003;
+}
+
+int main() {
+  uint64_t number;
+  std::cin >> number;
+  number = number % 2000008;
+  std::cout << Fibonacci(number);
+  return 0;
+}
