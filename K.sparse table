@@ -1,0 +1,59 @@
+#include <cmath>
+#include <iostream>
+#include <vector>
+
+std::vector<std::vector<int>> Sparse(std::vector<int>& arr, int num) {
+  std::vector<std::vector<int>> table(num,
+                                      std::vector<int>(((int)log2(num)) + 1));
+  for (int i = 0; i < num; i++) {
+    table[i][0] = i;
+  }
+  for (int j = 1; (1 << j) <= num; j++) {
+    for (int i = 0; (i + (1 << j) - 1) < num; i++) {
+      if (arr[table[i][j - 1]] < arr[table[i + (1 << (j - 1))][j - 1]]) {
+        table[i][j] = table[i][j - 1];
+      } else {
+        table[i][j] = table[i + (1 << (j - 1))][j - 1];
+      }
+    }
+  }
+  return table;
+}
+
+int IndexMin(std::vector<int>& arr, std::vector<std::vector<int>>& table,
+             int start, int end) {
+  int j = (int)log2(end - start + 1);
+  if (arr[table[start][j]] <= arr[table[end - (1 << j) + 1][j]]) {
+    return table[start][j];
+  }
+  return table[end - (1 << j) + 1][j];
+}
+int SecMin(std::vector<int>& arr, std::vector<std::vector<int>>& table,
+           int start, int end) {
+  int ind_min = IndexMin(arr, table, start, end);
+  if (ind_min == start) {
+    return arr[IndexMin(arr, table, start + 1, end)];
+  }
+  if (ind_min == end) {
+    return arr[IndexMin(arr, table, start, end - 1)];
+  }
+  int x = arr[IndexMin(arr, table, ind_min + 1, end)];
+  int y = arr[IndexMin(arr, table, start, ind_min - 1)];
+  return std::min(x, y);
+}
+
+int main() {
+  int num, ranges;
+  std::cin >> num >> ranges;
+  std::vector<int> arr(num);
+  for (int i = 0; i < num; i++) {
+    std::cin >> arr[i];
+  }
+  std::vector<std::vector<int>> table = Sparse(arr, num);
+  int start, end;
+  for (int i = 0; i < ranges; i++) {
+    std::cin >> start >> end;
+    std::cout << SecMin(arr, table, start - 1, end - 1) << std::endl;
+  }
+  return 0;
+}
